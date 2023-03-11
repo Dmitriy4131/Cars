@@ -1,0 +1,3 @@
+sportcar BMW 340 BMW Anton Krasnov 30 5
+larry Kamaz 200 KAMAZ Aleksandr Petrov 40 10
+sportcar camry 300 Camry Oleg Belov 35 8 
