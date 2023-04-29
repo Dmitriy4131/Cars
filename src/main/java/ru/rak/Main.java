@@ -8,6 +8,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
@@ -17,6 +18,7 @@ public class Main {
             e.printStackTrace();
         }
     }
+
     public static void main() throws IOException {
         Scanner sc = new Scanner(System.in);
 
@@ -36,31 +38,37 @@ public class Main {
                 deleteCarByBrand(brand);
                 System.exit(0);
             case 4:
-                System.out.println("Enter the car class: ");
-                String carClass = sc.next();
-                System.out.println("List of all " + carClass + " cars: ");
-                System.out.println(filteringCarsByClass(carClass));
+                sc.nextLine();
+                System.out.print("Enter the car class: ");
+                String carClass = sc.nextLine();
+                System.out.print("Enter the car brand: ");
+                String carBrand = sc.nextLine();
+                System.out.print("Enter the car power: ");
+                int carPower = sc.nextInt();
+                System.out.println("List of all cars with parameters (" + carClass + " ," + carBrand + " ," + carPower + "):");
+                System.out.println(filteringCarsByParameters(carClass, carBrand, carPower));
                 main();
             case 5:
                 System.exit(0);
             default:
-                throw new IllegalStateException("Unexpected value: " );
+                throw new IllegalStateException("Unexpected value: ");
         }
     }
 
-    public static List<Car> filteringCarsByClass(String carclass) {
+    public static List<Car> filteringCarsByParameters(String carClass, String carBrand, int carPower) {
         File file = new File("Car.txt");
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-            List<Car> cars = new ArrayList<>();
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                String[] car = line.split(" ");
-                Car currentCar = new Car(car[0], car[1], new Engine(Integer.parseInt(car[2]), car[3]),
-                        new Driver(car[4], car[5], Integer.parseInt(car[6]), Integer.parseInt(car[7])));
-                if (car[0].equalsIgnoreCase(carclass))
-                    cars.add(currentCar);
-            }
+            List<Car> cars = bufferedReader.lines()
+                    .map(line -> {
+                        String[] car = line.split(" ");
+                        return new Car(car[0], car[1], new Engine(Integer.parseInt(car[2]), car[3]),
+                                new Driver(car[4], car[5], Integer.parseInt(car[6]), Integer.parseInt(car[7])));
+                    })
+                    .filter(car -> (carClass.isEmpty() || car.getCarClass().equals(carClass)))
+                    .filter(car -> (carBrand.isEmpty() || car.getBrand().equals(carBrand)))
+                    .filter(car -> (carPower == 0 || car.engine.getPower() <= carPower))
+                    .collect(Collectors.toList());
             return cars;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -94,6 +102,7 @@ public class Main {
         bufferedReader.close();
 
         file.delete();
+
         tempFile.renameTo(new File("Car.txt"));
     }
 
