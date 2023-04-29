@@ -43,10 +43,14 @@ public class Main {
                 String carClass = sc.nextLine();
                 System.out.print("Enter the car brand: ");
                 String carBrand = sc.nextLine();
+                System.out.print("Enter the car color: ");
+                String carColor = sc.nextLine();
                 System.out.print("Enter the car power: ");
                 int carPower = sc.nextInt();
-                System.out.println("List of all cars with parameters (" + carClass + " ," + carBrand + " ," + carPower + "):");
-                System.out.println(filteringCarsByParameters(carClass, carBrand, carPower));
+
+                System.out.println("List of all cars with parameters (" + carClass + " ," + carBrand + " ," + carPower
+                        + ","+carColor +"):");
+                System.out.println(filteringCarsByParameters(carClass, carBrand, carPower, carColor));
                 main();
             case 5:
                 System.exit(0);
@@ -55,19 +59,20 @@ public class Main {
         }
     }
 
-    public static List<Car> filteringCarsByParameters(String carClass, String carBrand, int carPower) {
+    public static List<Car> filteringCarsByParameters(String carClass, String carBrand, int carPower, String carColor) {
         File file = new File("Car.txt");
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
             List<Car> cars = bufferedReader.lines()
                     .map(line -> {
                         String[] car = line.split(" ");
-                        return new Car(car[0], car[1], new Engine(Integer.parseInt(car[2]), car[3]),
-                                new Driver(car[4], car[5], Integer.parseInt(car[6]), Integer.parseInt(car[7])));
+                        return new Car(car[0], car[1],car[2], new Engine(Integer.parseInt(car[3]), car[4]),
+                                new Driver(car[5], car[6], Integer.parseInt(car[7]), Integer.parseInt(car[8])));
                     })
                     .filter(car -> (carClass.isEmpty() || car.getCarClass().equals(carClass)))
                     .filter(car -> (carBrand.isEmpty() || car.getBrand().equals(carBrand)))
                     .filter(car -> (carPower == 0 || car.engine.getPower() <= carPower))
+                    .filter(car -> (carColor.isEmpty()|| car.getColor().equals(carColor)))
                     .collect(Collectors.toList());
             return cars;
         } catch (FileNotFoundException e) {
@@ -90,8 +95,8 @@ public class Main {
         while ((line = bufferedReader.readLine()) != null) {
 
             String[] car = line.split(" ");
-            Car currentCar = new Car(car[0], car[1], new Engine(Integer.parseInt(car[2]), car[3]),
-                    new Driver(car[4], car[5], Integer.parseInt(car[6]), Integer.parseInt(car[7])));
+            Car currentCar = new Car(car[0], car[1],car[2], new Engine(Integer.parseInt(car[3]), car[4]),
+                    new Driver(car[5], car[6], Integer.parseInt(car[7]), Integer.parseInt(car[8])));
             cars.add(currentCar);
             if (!car[1].equalsIgnoreCase(brand)) {
                 bufferedWriter.write(line + "\n");
@@ -114,8 +119,8 @@ public class Main {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 String[] car = line.split(" ");
-                Car currentCar = new Car(car[0], car[1], new Engine(Integer.parseInt(car[2]), car[3]),
-                        new Driver(car[4], car[5], Integer.parseInt(car[6]), Integer.parseInt(car[7])));
+                Car currentCar = new Car(car[0], car[1], car[2], new Engine(Integer.parseInt(car[3]), car[4]),
+                        new Driver(car[5], car[6], Integer.parseInt(car[7]), Integer.parseInt(car[8])));
                 cars.add(currentCar);
             }
             return cars;
@@ -134,13 +139,14 @@ public class Main {
 
             String carClass = car.getCarClass();
             String brand = car.getBrand();
+            String color = car.getColor();
             int power = car.engine.getPower();
             String company = car.engine.getCompany();
             String firstName = car.driver.getFirstName();
             String lastName = car.driver.getLastName();
             int age = car.driver.getAge();
             int experience = car.driver.getExperience();
-            bufferedWriter.write(carClass + " " + brand + " " + power + " " +
+            bufferedWriter.write(carClass + " " + brand + " " + color + " " + power + " " +
                     company + " " + firstName + " " + lastName + " " + age + " " + experience + " " +
                     System.getProperty("line.separator"));
             bufferedWriter.close();
