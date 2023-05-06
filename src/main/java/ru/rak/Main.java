@@ -28,7 +28,10 @@ public class Main {
                 main();
             case 2:
                 System.out.println("List of all cars: ");
-                System.out.println(getCarsFromFile());
+                List<Map<String, Object>>  listCars = readFile();
+                for (Map<String, Object> car : listCars){
+                    System.out.println(car);
+                }
                 main();
             case 3:
                 System.out.print("Enter the brand of the car to delete: ");
@@ -38,6 +41,7 @@ public class Main {
             case 4:
                 sc.nextLine();
                 Map<String, Object> listParameters = new HashMap<>();
+                System.out.println("Possible parameters for filtering(class, brand, color, power)");
 
                 System.out.print("Enter the car class: ");
                 listParameters.put("carClass", sc.nextLine());
@@ -144,27 +148,6 @@ public class Main {
         file.delete();
 
         tempFile.renameTo(new File("Car.txt"));
-    }
-
-    public static List<Car> getCarsFromFile() {
-        File file = new File("Car.txt");
-        try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-            List<Car> cars = new ArrayList<>();
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                String[] car = line.split(" ");
-                Car currentCar = new Car(car[0], car[1], car[2], new Engine(Integer.parseInt(car[3]), car[4]),
-                        new Driver(car[5], car[6], Integer.parseInt(car[7]), Integer.parseInt(car[8])));
-                cars.add(currentCar);
-            }
-            return cars;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     public static void saveCarToFile(Car car) {
