@@ -41,20 +41,43 @@ public class Main {
             case 4:
                 sc.nextLine();
                 Map<String, Object> listParameters = new HashMap<>();
-                System.out.println("Possible parameters for filtering(class, brand, color, power)");
 
-                System.out.print("Enter the car class: ");
-                listParameters.put("carClass", sc.nextLine());
-                System.out.print("Enter the car brand: ");
-                listParameters.put("brand", sc.nextLine());
-                System.out.print("Enter the car color: ");
-                listParameters.put("color", sc.nextLine());
-                System.out.print("Enter the car power: ");
-                listParameters.put("power", sc.nextInt());
-                sc.nextLine();
+                List<String> allParameters =  new ArrayList<>();
+                allParameters.add("carClass");
+                allParameters.add("brand");
+                allParameters.add("color");
+                allParameters.add("power");
 
-                System.out.println("List of all cars with parameters " + listParameters);
-                System.out.println("List of filtered cars:");
+                System.out.println("Possible parameters for filtering: " + allParameters);
+
+                List<String> selectedParameters = new ArrayList<>();
+                System.out.println("Enter the name of the parameter to filter or press Enter to complete:");
+                while(true){
+                    String filterName = sc.nextLine();
+                    if(filterName.isEmpty()){
+                        break;
+                    }
+                    else if (!allParameters.contains(filterName)){
+                        System.out.println("Invalid parameters name!");
+                    }
+                    else {
+                        selectedParameters.add(filterName);
+                    }
+                }
+                System.out.println("Parameters used: " + selectedParameters);
+                for (String filter : selectedParameters){
+                    System.out.print("Enter " + filter + " - ");
+                    String value = sc.nextLine();
+                    try {
+                        int intValue = Integer.parseInt(value);
+                        listParameters.put(filter, intValue);
+                    }
+                    catch (NumberFormatException  e){
+                        listParameters.put(filter, value);
+                    }
+                }
+
+                System.out.println("List of all cars with parameters " + listParameters + " :");
                 List<Map<String, Object>> filteredListCars = filteringCarsByParameters(Objects.requireNonNull(readFile()), listParameters);
                 for (Map<String, Object> car : filteredListCars) {
                     System.out.println(car);
