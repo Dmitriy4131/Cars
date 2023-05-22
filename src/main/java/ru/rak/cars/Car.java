@@ -6,17 +6,25 @@ import ru.rak.professions.Driver;
 import java.util.Scanner;
 
 public class Car {
-    private String carClass, brand;
+    private String carClass, brand, color;
     public Engine engine;
     public Driver driver;
 
-    public Car(String carClass, String brand, Engine engine, Driver driver) {
+    public Car(String carClass, String brand,String color, Engine engine, Driver driver) {
         this.carClass = carClass;
         this.brand = brand;
+        this.color = color;
         this.engine = engine;
         this.driver = driver;
     }
 
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
     public String getCarClass() {
         return carClass;
     }
@@ -34,7 +42,7 @@ public class Car {
     }
 
     public static Car addCarToListCars(Scanner scanner) {
-        Car car = new Car(" ", " ", new Engine(0, ""),
+        Car car = new Car(" ", " "," ", new Engine(0, ""),
                 new Driver(" ", " ", 0, 0));
         Scanner sc = new Scanner(System.in);
         System.out.print("CarClass ");
@@ -43,6 +51,9 @@ public class Car {
         System.out.print("Brand ");
         String brand = sc.next();
         car.setBrand(brand);
+        System.out.print("Color ");
+        String color = sc.next();
+        car.setColor(color);
 
         System.out.print("Power ");
         int power = sc.nextInt();
@@ -71,6 +82,7 @@ public class Car {
         return "Car{" +
                 "carClass='" + getCarClass() + '\'' +
                 ", brand='" + getBrand() + '\'' +
+                ", color='" + getColor() + '\'' +
                 ", power=" + engine.getPower() +
                 ", company='" + engine.getCompany() + '\'' +
                 ", firstName='" + driver.getFirstName() + '\'' +

@@ -5,9 +5,8 @@ import ru.rak.details.Engine;
 import ru.rak.professions.Driver;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
@@ -17,6 +16,7 @@ public class Main {
             e.printStackTrace();
         }
     }
+
     public static void main() throws IOException {
         Scanner sc = new Scanner(System.in);
 
@@ -28,7 +28,10 @@ public class Main {
                 main();
             case 2:
                 System.out.println("List of all cars: ");
-                System.out.println(getCarsFromFile());
+                List<Map<String, Object>>  listCars = readFile();
+                for (Map<String, Object> car : listCars){
+                    System.out.println(car);
+                }
                 main();
             case 3:
                 System.out.print("Enter the brand of the car to delete: ");
@@ -36,30 +39,76 @@ public class Main {
                 deleteCarByBrand(brand);
                 System.exit(0);
             case 4:
-                System.out.println("Enter the car class: ");
-                String carClass = sc.next();
-                System.out.println("List of all " + carClass + " cars: ");
-                System.out.println(filteringCarsByClass(carClass));
+                sc.nextLine();
+                Map<String, Object> listParameters = new HashMap<>();
+
+                List<String> allParameters =  new ArrayList<>();
+                allParameters.add("carClass");
+                allParameters.add("brand");
+                allParameters.add("color");
+                allParameters.add("power");
+
+                System.out.println("Possible parameters for filtering: " + allParameters);
+
+                List<String> selectedParameters = new ArrayList<>();
+                System.out.println("Enter the name of the parameter to filter or press Enter to complete:");
+                while(true){
+                    String filterName = sc.nextLine();
+                    if(filterName.isEmpty()){
+                        break;
+                    }
+                    else if (!allParameters.contains(filterName)){
+                        System.out.println("Invalid parameters name!");
+                    }
+                    else {
+                        selectedParameters.add(filterName);
+                    }
+                }
+                System.out.println("Parameters used: " + selectedParameters);
+                for (String filter : selectedParameters){
+                    System.out.print("Enter " + filter + " - ");
+                    String value = sc.nextLine();
+                    try {
+                        int intValue = Integer.parseInt(value);
+                        listParameters.put(filter, intValue);
+                    }
+                    catch (NumberFormatException  e){
+                        listParameters.put(filter, value);
+                    }
+                }
+
+                System.out.println("List of all cars with parameters " + listParameters + " :");
+                List<Map<String, Object>> filteredListCars = filteringCarsByParameters(Objects.requireNonNull(readFile()), listParameters);
+                for (Map<String, Object> car : filteredListCars) {
+                    System.out.println(car);
+                }
                 main();
             case 5:
                 System.exit(0);
             default:
-                throw new IllegalStateException("Unexpected value: " );
+                throw new IllegalStateException("Unexpected value: ");
         }
     }
 
-    public static List<Car> filteringCarsByClass(String carclass) {
+    public static List<Map<String, Object>> readFile() {
         File file = new File("Car.txt");
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-            List<Car> cars = new ArrayList<>();
+            List<Map<String, Object>> cars = new ArrayList<>();
             String line;
             while ((line = bufferedReader.readLine()) != null) {
+                Map<String, Object> item = new LinkedHashMap<>();
                 String[] car = line.split(" ");
-                Car currentCar = new Car(car[0], car[1], new Engine(Integer.parseInt(car[2]), car[3]),
-                        new Driver(car[4], car[5], Integer.parseInt(car[6]), Integer.parseInt(car[7])));
-                if (car[0].equalsIgnoreCase(carclass))
-                    cars.add(currentCar);
+                item.put("carClass", car[0]);
+                item.put("brand", car[1]);
+                item.put("color", car[2]);
+                item.put("power", car[3]);
+                item.put("company", car[4]);
+                item.put("firstName", car[5]);
+                item.put("lastName", car[6]);
+                item.put("age", car[7]);
+                item.put("experience", car[8]);
+                cars.add(item);
             }
             return cars;
         } catch (FileNotFoundException e) {
@@ -69,6 +118,32 @@ public class Main {
         }
         return null;
     }
+
+    public static List<Map<String, Object>> filteringCarsByParameters(List<Map<String, Object>> carList, Map<String, Object> listParameters) {
+        List<Map<String, Object>> filterList = new ArrayList<>();
+
+        for (Map<String, Object> item : carList) {
+            boolean isMatch = true;
+            for (Map.Entry<String, Object> entry : listParameters.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+
+                if (!item.containsKey(key) ||
+                        (value instanceof String stringValue &&
+                                (!stringValue.isEmpty() && !stringValue.equals(item.get(key)))) ||
+                        (value instanceof Integer intValue &&
+                                (intValue != 0 && intValue < Integer.parseInt((String) item.get(key))))) {
+                    isMatch = false;
+                    break;
+                }
+            }
+            if (isMatch) {
+                filterList.add(item);
+            }
+        }
+        return filterList;
+    }
+
 
     public static void deleteCarByBrand(String brand) throws IOException {
         File file = new File("Car.txt");
@@ -82,8 +157,8 @@ public class Main {
         while ((line = bufferedReader.readLine()) != null) {
 
             String[] car = line.split(" ");
-            Car currentCar = new Car(car[0], car[1], new Engine(Integer.parseInt(car[2]), car[3]),
-                    new Driver(car[4], car[5], Integer.parseInt(car[6]), Integer.parseInt(car[7])));
+            Car currentCar = new Car(car[0], car[1], car[2], new Engine(Integer.parseInt(car[3]), car[4]),
+                    new Driver(car[5], car[6], Integer.parseInt(car[7]), Integer.parseInt(car[8])));
             cars.add(currentCar);
             if (!car[1].equalsIgnoreCase(brand)) {
                 bufferedWriter.write(line + "\n");
@@ -94,28 +169,8 @@ public class Main {
         bufferedReader.close();
 
         file.delete();
-        tempFile.renameTo(new File("Car.txt"));
-    }
 
-    public static List<Car> getCarsFromFile() {
-        File file = new File("Car.txt");
-        try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-            List<Car> cars = new ArrayList<>();
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                String[] car = line.split(" ");
-                Car currentCar = new Car(car[0], car[1], new Engine(Integer.parseInt(car[2]), car[3]),
-                        new Driver(car[4], car[5], Integer.parseInt(car[6]), Integer.parseInt(car[7])));
-                cars.add(currentCar);
-            }
-            return cars;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+        tempFile.renameTo(new File("Car.txt"));
     }
 
     public static void saveCarToFile(Car car) {
@@ -125,13 +180,14 @@ public class Main {
 
             String carClass = car.getCarClass();
             String brand = car.getBrand();
+            String color = car.getColor();
             int power = car.engine.getPower();
             String company = car.engine.getCompany();
             String firstName = car.driver.getFirstName();
             String lastName = car.driver.getLastName();
             int age = car.driver.getAge();
             int experience = car.driver.getExperience();
-            bufferedWriter.write(carClass + " " + brand + " " + power + " " +
+            bufferedWriter.write(carClass + " " + brand + " " + color + " " + power + " " +
                     company + " " + firstName + " " + lastName + " " + age + " " + experience + " " +
                     System.getProperty("line.separator"));
             bufferedWriter.close();

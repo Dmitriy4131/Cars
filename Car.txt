@@ -1,3 +1,13 @@
-sportcar BMW 340 BMW Anton Krasnov 30 5
-larry Kamaz 200 KAMAZ Aleksandr Petrov 40 10
-sportcar camry 300 Camry Oleg Belov 35 8 
+larry Kamaz black 200 KAMAZ Aleksandr Petrov 40 10
+sportcar Toyota blue 150 Toyota John Smith 30 5
+sportcar BMW_X5 red 300 BMW Anna Lee 42 18
+sportcar Ford_Mustang black 250 Ford Mark Johnson 50 25
+larry Ford_F-150 black 300 Ford John Petrov 50 25
+sportcar Mercedes-Benz green 400 Mercedes-Benz Emily Wong 35 10
+sportcar Honda_Civic white 130 Honda David Lee 28 2
+larry Jeep_Wrangler black 280 Jeep David Garcia 33 7
+sportcar Chevrolet_Tahoe yellow 350 Chevrolet Robert Brown 45 20
+larry Toyota_Tacoma black 200 Toyota Larry Jones 38 12
+larry Dodge_Charger gray 250 Dodge Larry Brown 35 10
+sportcar Nissan_Altima black 180 Nissan Jessica Kim 33 7
+sportcar Volkswagen_Golf orange 120 Volkswagen Laura Davis 29 3
